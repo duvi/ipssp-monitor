@@ -136,6 +136,14 @@ typedef struct ieee80211_radiotap_header {
 	u_int8_t  it_pad;
 	u_int16_t it_len;        /* entire length */
 	u_int32_t it_present;    /* fields present */
+#define RADIOTAP_TSFT 0x01
+#define RADIOTAP_FLAGS 0x02
+#define RADIOTAP_RATE 0x04
+#define RADIOTAP_CHANNEL 0x08
+#define RADIOTAP_FHSS 0x10
+#define RADIOTAP_SIGNAL 0x20
+#define RADIOTAP_NOISE 0x40
+#define RADIOTAP_LOCK 0x80
 } __attribute__((__packed__)) radiotap_hdr_t;
 
 
@@ -317,7 +325,7 @@ int main(int argc, char **argv)
 	radiotap_hdr_t *rhdr;
 	ieee802_11_hdr *header;
 
-	int to_ds, from_ds, data;
+	int to_ds, from_ds, data, signal_present;
 	char * src = "\0\0\0\0\0\0";
 	char * dst = "\0\0\0\0\0\0";
 	int in_signal;
@@ -507,6 +515,12 @@ int main(int argc, char **argv)
 		    printf( "Wrong radiotap header version.\n" );
 		    continue;
 		}
+
+		rhdr = (radiotap_hdr_t *) (pktbuf);
+		signal_present = rhdr->it_present & RADIOTAP_SIGNAL;
+
+		if (!signal_present) continue;
+
 		int number = pktbuf[2] | (unsigned int)((unsigned int)pktbuf[3]<<8);
 		if (number<=0 || number>=pktlen) {
 		    printf("something wrong %d\n",number);
