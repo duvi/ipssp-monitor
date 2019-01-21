@@ -55,6 +55,20 @@
 #define le16(x) (x)
 #endif
 
+
+#if defined(HAVE_ATH9K)
+#define IPSSP_CHANNEL_BYTE_1 26
+#define IPSSP_CHANNEL_BYTE_2 27
+#define IPSSP_SIGNAL_BYTE 30
+#endif
+
+#if defined(HAVE_MT76X2)
+#define IPSSP_CHANNEL_BYTE_1 18
+#define IPSSP_CHANNEL_BYTE_2 19
+#define IPSSP_SIGNAL_BYTE 22
+#endif
+
+
 typedef struct ieee802_11_hdr {
   u_char frame_control;
 #define IEEE80211_DATA 0x08
@@ -424,6 +438,14 @@ int main(int argc, char **argv)
 	msg("Monitoring interface %s ...\n", ifname);
 	msg("MAC address: "); print_mac(serial_address, "\n");
 
+#if defined(HAVE_ATH9K)
+	msg("Driver in use: ath9k\n");
+#endif
+
+#if defined (HAVE_MT76X2)
+	msg("Driver in use: mt76x2\n");
+#endif
+
 	if (!streaming)
 	{
 		if (!foreground)
@@ -521,8 +543,8 @@ int main(int argc, char **argv)
 			//bss = header->addr1;
 		    }
 			memcpy(in_mac, src, 6);
-			in_channel = ieee80211_mhz2ieee(pktbuf[27]*256 + pktbuf[26]);
-			in_signal = (pktbuf[30]-256);
+			in_channel = ieee80211_mhz2ieee(pktbuf[IPSSP_CHANNEL_BYTE_2]*256 + pktbuf[IPSSP_CHANNEL_BYTE_1]);
+			in_signal = (pktbuf[IPSSP_SIGNAL_BYTE]-256);
 
 		}
 		else {

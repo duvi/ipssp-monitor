@@ -32,6 +32,14 @@ endef
 define Build/Configure
 endef
 
+ifeq ($(CONFIG_PACKAGE_kmod-ath9k),y)
+TARGET_CFLAGS += -DHAVE_ATH9K
+endif
+
+ifeq ($(CONFIG_PACKAGE_kmod-mt76x2),y)
+TARGET_CFLAGS += -DHAVE_MT76X2
+endif
+
 define Build/Compile
 	$(TARGET_CC) $(TARGET_CFLAGS) \
 		-o $(PKG_BUILD_DIR)/ipssp $(PKG_BUILD_DIR)/ipssp.c
