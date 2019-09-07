@@ -411,12 +411,6 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	if (streaming && (remote || port))
-	{
-		msg("The -s and -r with -p options are exclusive\n");
-		return 1;
-	}
-
 	if (!local.sll_ifindex)
 	{
 		msg("No interface specified\n");
@@ -479,16 +473,18 @@ int main(int argc, char **argv)
 			}
 		}
 
-		msg(" * Sending data to host %s port %i \n", remote, port);
-
-		open_out(remote, port);
-
 		signal(SIGUSR1, sig_dump);
 	}
 	else
 	{
 		msg(" * Streaming data to stdout\n");
 	}
+
+        if (remote && port)
+        {
+		msg(" * Sending data to host %s port %i \n", remote, port);
+		open_out(remote, port);
+        }
 
 	signal(SIGINT, sig_teardown);
 	signal(SIGTERM, sig_teardown);
@@ -575,7 +571,7 @@ int main(int argc, char **argv)
 			printf("channel: %i\n", in_channel);
 			printf("signal: %i\n", in_signal);
 		}
-		else
+		if (remote && port)
 		{
 		    p_temp = p_start;
 		    csere = 0;
@@ -586,6 +582,10 @@ int main(int argc, char **argv)
 			        {
 			        if (time(NULL) == p_temp->time + 1)
 				    {
+				    if (streaming)
+				        {
+				        printf("sending. src: "); print_mac(p_temp->address, " "); printf("mon: "); print_mac(serial_address, " "); printf("sig: %i\n", (0-mw2dbm(p_temp->signal_mw / p_temp->counter)));
+				        }
 				    char adat_ki[40];
 				    if (text)
 					{
