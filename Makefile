@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2012 Jo-Philipp Wich <jo@mein.io>
+# Copyright (C) 2018-2019 Varga David, InnoBova Kft. <varga.david@duvinet.hu>
 #
 # This is free software, licensed under the Apache 2 license.
 #
@@ -17,7 +17,7 @@ define Package/ipssp
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=Simple radiotap capture utility
-  MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
+  MAINTAINER:=Varga David <varga.david@duvinet.hu>
 endef
 
 define Package/ipssp/description
@@ -49,6 +49,8 @@ endef
 define Package/ipssp/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipssp $(1)/usr/sbin/ipssp
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/ipssp.init $(1)/etc/init.d/ipssp
 endef
 
 $(eval $(call BuildPackage,ipssp))
