@@ -274,9 +274,9 @@ void open_out(char *host, int port)
     memset(&(server_addr.sin_zero), '\0', 8);	// kinullázza a struktúra maradék részét
 }
 
-void elkuld(char ki_adat[80])
+void elkuld(char ki_adat[40], int length)
 {
-    if ((numbytes_out=sendto(sockfd_out, ki_adat, strlen(ki_adat), 0,(struct sockaddr *)&server_addr, sizeof(struct sockaddr))) == -1)
+    if ((numbytes_out=sendto(sockfd_out, ki_adat, length, 0,(struct sockaddr *)&server_addr, sizeof(struct sockaddr))) == -1)
 	{
 	perror("sendto");
 	exit(1);
@@ -590,14 +590,15 @@ int main(int argc, char **argv)
 				    if (text)
 					{
 					sprintf(adat_ki, "pos_av %02x:%02x:%02x:%02x:%02x:%02x,%i,%i", p_temp->address[0] & 0xFF, p_temp->address[1] & 0xFF, p_temp->address[2] & 0xFF, p_temp->address[3] & 0xFF, p_temp->address[4] & 0xFF, p_temp->address[5] & 0xFF, (0-mw2dbm(p_temp->signal_mw / p_temp->counter)), p_temp->channel);
+					elkuld(adat_ki, strlen(adat_ki));
 					}
 				    else
 					{
 					memcpy(adat_ki, serial_address, 6);
 					memcpy(adat_ki+6, p_temp->address, 6);
 					sprintf(adat_ki+12, "%c%c", (0-mw2dbm(p_temp->signal_mw / p_temp->counter)), p_temp->channel);
+					elkuld(adat_ki, 14);
 					}
-				    elkuld(adat_ki);
 				    }
 				p_temp->signal_db = 0;
 				p_temp->signal_mw = 0;
